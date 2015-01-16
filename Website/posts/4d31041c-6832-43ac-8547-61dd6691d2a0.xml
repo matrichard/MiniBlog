@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>Web API and Camel Case</title>
+  <description />
+  <content>&lt;p&gt;When starting a new ASP.NET project there is&amp;nbsp; a folder called App_Start and inside this folder you will find a file WebApiConfig. This file should be used for all config for any ApiController. It already contains some element of configuration, but it is missing one very important (IMO): the camelCasing of the properties of a JSON response. When making a call to an ApiController without the camel case settings the JSON response will be like so :&lt;/p&gt; &lt;p&gt;&lt;a href="/posts/files/preCamelCase.png"&gt;&lt;img title="preCamelCase" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="preCamelCase" src="/posts/files/preCamelCase_thumb.png" width="459" height="177"&gt;&lt;/a&gt; &lt;/p&gt; &lt;p&gt;As you can see from the response (lower box) all the properties name start with a capital letter, which could cause problems when users would want to use your API, or when mapping with a Javascript library. By adding a single line of code in the Register methood of the WebApiConfig.cs file:&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();&lt;/pre&gt;&lt;pre class="brush: csharp;"&gt;&amp;nbsp;&lt;/pre&gt;
+&lt;p&gt;Your JSON response will now return what is considered to be &lt;a href="http://tools.ietf.org/search/rfc4627" target="_blank"&gt;valid JSON&lt;/a&gt; :&lt;/p&gt;
+&lt;p&gt;&lt;a href="/posts/files/postCamelCase.png"&gt;&lt;img title="postCamelCase" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="postCamelCase" src="/posts/files/postCamelCase_thumb.png" width="430" height="222"&gt;&lt;/a&gt;&lt;/p&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-08-27 03:55:58</pubDate>
+  <lastModified>2015-01-08 14:52:03</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>web-api-and-camel-case</slug>
+  <tags>
+    <tag>web api</tag>
+  </tags>
+  <comments>
+  </comments>
+  <categories>
+    <category>WebAPI</category>
+    <category>JSON</category>
+  </categories>
+  <notifications>
+    <email>melanie.bereznak62@gmail.com</email>
+  </notifications>
+</post>

@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>So you want to upload in Azure storage from a browser do you !! Don’t forget CORS</title>
+  <description>So now that CORS is available for Azure Storage, how do I set it up? There is no UI in the Azure por</description>
+  <content>&lt;p&gt;So now that CORS is available for Azure Storage, how do I set it up? There is no UI in the Azure portal to just enable it, so basically you have to code it yourself, if you don’t feel like it you can go to my &lt;a href="https://github.com/matrichard/AzureCors" target="_blank"&gt;github&lt;/a&gt; and grab it. For now it does not do much, but it’s a fast and easy way to enable CORS on a storage.&lt;/p&gt; &lt;h1&gt;So what’s CORS got to do with it&lt;/h1&gt; &lt;p&gt;Well basically without CORS your website server would have to act as a proxy for the upload you are trying to make in the storage(every file is uploaded to your web server and then your web server will send then file in storage). It’s not that bad until you realize that, what if I have lots (like so many) users that are uploading at the same time some very large files, how will you have to scale up your servers in order to both support the very large upload and to continue to deliver pages and functionality? With CORS you don’t have to worry about that! Once CORS is permitted on the storage, the client (the browser), can upload directly in the storage. It’s that easy…..well on paper it is, but I’m pretty sure that if you have a storage account and have created a blob container, it’s most probably private, therefore there is no way to upload in it from a browser (more on that in the next part of the series).&lt;/p&gt; &lt;p&gt;In order to enable CORS you must have a rule that states at least&lt;/p&gt; &lt;ul&gt; &lt;li&gt;who is allowed (the origin of the request)  &lt;li&gt;what is allowed (the HTTP verbs)  &lt;li&gt;how long before the browser should ask again (in seconds)&lt;/li&gt;&lt;/ul&gt; &lt;h3&gt;&amp;nbsp;&lt;/h3&gt; &lt;h1&gt;How it works&lt;/h1&gt; &lt;p&gt;Usually when a browser needs to work with another domain than the one the page was loaded from 2 actions will happen:&lt;/p&gt; &lt;ol&gt; &lt;li&gt;Preflight request (HTTP OPTIONS)  &lt;li&gt;The actual request (if preflight was successful)&lt;/li&gt;&lt;/ol&gt; &lt;p&gt;&amp;nbsp;&lt;/p&gt; &lt;h3&gt;Huh Preflight ?!?!&lt;/h3&gt; &lt;p&gt;The browser sends a request to the server using the HTTP OPTIONS with the actual headers and the domain issuing the request (the origin), the server will then evaluate the operation from the verb and the headers, if CORS is enabled and there is a rule that match, then the server will send a 200 and the actual request will be executed otherwise it will send out a 403 denying the operation (with a nice message also…how sweet!!).&lt;/p&gt;&lt;a href="/posts/files/Capture-Cors.png"&gt;&lt;img title="Capture-Cors" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="Capture-Cors" src="/posts/files/Capture-Cors_thumb.png" width="955" height="361"&gt;&lt;/a&gt;  &lt;p&gt;&amp;nbsp;&lt;/p&gt; &lt;h3&gt;OK got it, now what&lt;/h3&gt; &lt;p&gt;Like I mentioned earlier in this post, you can easily enable CORS with this &lt;a href="https://github.com/matrichard/AzureCors" target="_blank"&gt;app (console for now)&lt;/a&gt;. Here is a basic walkthrough of the code and what it does (using version 3.0 of the Azure SDK):&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;public void EnableBlobCors()
+{
+    var cred = new StorageCredentials(corsConfig.AccountName, corsConfig.AccountKey);
+    var storageAccount = new CloudStorageAccount(cred, true);
+    var blobClient = storageAccount.CreateCloudBlobClient();
+    ConfigureCors(blobClient);
+}
+
+private void ConfigureCors(CloudBlobClient blobClient)
+{
+    var serviceProperties = new ServiceProperties
+    {
+        HourMetrics = null,
+        MinuteMetrics = null,
+        Logging = null
+    };
+
+    AddCorsRule(serviceProperties);
+    blobClient.SetServiceProperties(serviceProperties);
+}
+
+private void AddCorsRule(ServiceProperties serviceProperties)
+{
+    serviceProperties.Cors = new CorsProperties();
+    serviceProperties.Cors.CorsRules.Add(new CorsRule()
+    {
+        //collection of allowed headers
+        AllowedHeaders = this.corsConfig.AllowedHeaders,
+        
+        //don't forget HEAD and OPTIONS otherwise preflight will fail
+        AllowedMethods = CorsHttpMethods.Put | CorsHttpMethods.Get | CorsHttpMethods.Head | CorsHttpMethods.Post | CorsHttpMethods.Options,&lt;/pre&gt;&lt;pre class="brush: csharp;"&gt;        //collection of allowed origin or "*"
+        AllowedOrigins = this.corsConfig.AllowedOrigins,
+        ExposedHeaders = this.corsConfig.ExposedHeaders,
+        MaxAgeInSeconds = this.corsConfig.MaxAge
+    });
+}
+&lt;/pre&gt;
+&lt;p&gt;So in an Azure class, I will get a reference to my Blob client and from there I will proceed to create a new service properties by setting the metrics to null I will not overwrite the existing metrics already in place. I then create a new CorsRule with the given value I want enable. the AllowedOrigin is where I would specify which domain can work with my storage and the AllowedMethods specifies which HTTP Verbs are allowed. HEAD and OPTIONS are added otherwise some preflight may fail.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;In the next post we will be looking at how we can easily upload files to our storage once CORS has been enabled &lt;strike&gt;using AngularJS (because I like it) and HTML5&lt;/strike&gt; first we need to understand Shared Access Signature (SAS) and the REST API. &lt;/p&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-05-14 02:26:00</pubDate>
+  <lastModified>2015-01-08 14:52:04</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>so-you-want-to-upload-in-azure-storage-from-a-browser-do-you--dont-forget-cors</slug>
+  <tags>
+    <tag>Azure Storage</tag>
+    <tag>CORS</tag>
+  </tags>
+  <comments>
+    <comment id="a4d287a6-3f33-4ae3-8b6f-0d57aa8833fb" parentid="00000000-0000-0000-0000-000000000000" approved="True" spam="False" deleted="False">
+      <date>2014-06-05 02:29:41</date>
+      <author>Just Code It</author>
+      <email>trackback</email>
+      <country />
+      <ip>23.96.32.128:14556</ip>
+      <website>http://www.matrichard.com/post/So-you-want-to-upload-in-Azure-storage-from-a-browser-do-you-!!-Here-is-my-how-to</website>
+      <content>So you want to upload in Azure storage from a browser do you !! Here is my how to
+
+So you want to upload in Azure storage from a browser do you !! Here is my how to</content>
+    </comment>
+    <comment id="7608ac38-fb50-4bac-a60e-a779d527ed0e" parentid="00000000-0000-0000-0000-000000000000" approved="True" spam="False" deleted="False">
+      <date>2014-07-18 19:11:13</date>
+      <author>Woodrow Walterman</author>
+      <email>3369Shellhorn@gmail.com</email>
+      <country>us</country>
+      <ip>54.193.11.112:59672</ip>
+      <avatar />
+      <content>naturally like your website but you have to check the spelling on quite a few of your posts. Many of them are rife with spelling issues and I to find it very bothersome to tell the reality nevertheless I&amp;#39;ll definitely come again again.</content>
+    </comment>
+    <comment id="63e03acc-89b8-44fe-bddc-3df55a4a949c" parentid="00000000-0000-0000-0000-000000000000" approved="True" spam="False" deleted="False">
+      <date>2014-07-18 21:05:07</date>
+      <author>Debbi Altum</author>
+      <email>4378Camerino@gmail.com</email>
+      <country>us</country>
+      <ip>54.193.11.112:63797</ip>
+      <avatar />
+      <content>hi!,I love your writing very much! proportion we keep in touch more about your post on AOL? I require an expert on this space to unravel my problem. Maybe that&amp;#39;s you! Looking forward to see you. </content>
+    </comment>
+  </comments>
+  <categories>
+    <category>Azure Storage</category>
+    <category>CORS</category>
+  </categories>
+  <notifications />
+</post>

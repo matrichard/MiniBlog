@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>Owin and the equivalent to application_end</title>
+  <description />
+  <content>&lt;p&gt;When working in an OWIN project (using Microsoft.Owin.Host.SystemWeb) you know when you are at the start of the application, because you will most likely have a Startup.cs class with a Configuration method. This is where you can use the IAppBuilder to configure your application, or even to invoke other classes that have work to do when the application starts. But what about when the application ends? Well there is a nice yet not very well documented (IMO) way of doing this:&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;public void Configuration(IAppBuilder app)
+{
+    var properties = new AppProperties(app.Properties);
+    var token = properties.OnAppDisposing;
+
+    if (token != CancellationToken.None)
+    {
+        token.Register(() =&amp;gt;
+        {
+            // do stuff here for ending / disposing
+        });
+    }
+}&lt;/pre&gt;
+&lt;p&gt;If you are familiar with OWIN you will already know that the app.Properties is loaded with info, but it’s a Dictionary&amp;lt;string,object&amp;gt;, so you kind of have to go look for what you want and cast it. With the AppProperties class (from the Microsoft.Owin.BuilderProperties) you can easily access some predefined properties that are in the app.Properties, and those will now be strongly typed (yeah !). So now in order to “hook” into the end of my application I only need to register an action on the OnAppDisposing token and bang, once my application is ending (disposing) this code will execute. &lt;/p&gt;
+&lt;p&gt;Don’t make the same mistake I did the first time I tested that. Of course I lauched my application in debug mode, with two breakpoints, one at the beginning of the Configuration method and the other in the beginning of the registered action. Of course the first break point was hit and everything was perfect, then I did Shift+F5 to stop debugging…..and nothing happened the second breakpoint was not hit, what the…. Yeah I know what you will say I stopped debugging, I did not end(dispose) my application. So I restarted the application in debug mode and then I stopped my IIS express (or any other host) and VOILA !!!! the other breakpoint was hit! Congrats to me :)&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Mat&lt;/p&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-10-02 23:52:00</pubDate>
+  <lastModified>2015-01-08 14:51:39</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>owin-and-the-equivalent-to-applicationend</slug>
+  <tags>
+    <tag>AppDisposing</tag>
+    <tag>application_end</tag>
+    <tag>owin</tag>
+    <tag>asp.net</tag>
+  </tags>
+  <comments>
+  </comments>
+  <categories>
+    <category>Owin</category>
+    <category>ASP.NET</category>
+  </categories>
+  <notifications />
+</post>

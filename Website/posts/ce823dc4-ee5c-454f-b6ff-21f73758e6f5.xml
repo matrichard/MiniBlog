@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>WebAPI catch all route or having a default route when a route is not found</title>
+  <description />
+  <content>&lt;p&gt;In a WebAPI application, by default when you hit an endpoint that does not exists you get a 404 response (with htnl in the body no less…..even if you are doing it from a webapi endpoint), and all of that is done through the framework and the routing mechanism. A quick and easy way to have control over this, is by adding a controller with a route that will be acting as a catch all. For the controller it goes like so:&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;public class DefaultController : ApiController
+{
+    public IHttpActionResult Get(string uri)
+    {
+        // do what is needed
+        return this.NotFound();
+    }
+}
+&lt;/pre&gt;
+&lt;p&gt;and the route would look like this:&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;config.Routes.MapHttpRoute(
+    name: "ResourceNotFound",
+    routeTemplate: "api/{*uri}",
+    defaults: new { controller = "Default", uri = RouteParameter.Optional });
+&lt;/pre&gt;
+&lt;p&gt;by adding this route any GET that is not mapped will default this this controller, what makes it work is the {*uri}, this capture everything that is after the api/, so in your controller you have access to the URI that was requested. This is an easy and quick way if you wanted to create a better response with a message stating what was the requested URI or needed to create some stats based on those unmatched route.&lt;/p&gt;
+&lt;p&gt;Things to note: &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;DO NOT put this route as a RouteAttribute (in WebAPI 2) if your routes are defined as RouteAttribute, because you’ll get an error:&lt;/li&gt;&lt;/ul&gt;&lt;pre class="brush: plain;"&gt;Multiple controller types were found that match the URL. This can happen if attribute routes on multiple controllers match the requested URL&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;This route should be the LAST route in your route collection and if lucky your only route defined that way.&lt;/li&gt;&lt;/ul&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Happy coding&lt;/p&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-10-08 02:18:59</pubDate>
+  <lastModified>2015-01-08 14:51:39</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>webapi-catch-all-route-or-having-a-default-route-when-a-route-is-not-found</slug>
+  <tags>
+    <tag>asp.net; webapi; controllers;</tag>
+  </tags>
+  <comments>
+  </comments>
+  <categories>
+    <category>ASP.NET</category>
+    <category>WebAPI</category>
+    <category>Owin</category>
+  </categories>
+  <notifications />
+</post>

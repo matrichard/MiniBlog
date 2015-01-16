@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>ASP.NET and some appsettings hidden values</title>
+  <description />
+  <content>&lt;p&gt;Alright, before you go crazy on me they are not really hidden, I mean there is an &lt;a href="http://msdn.microsoft.com/en-us/library/hh975440.aspx" target="_blank"&gt;internet page&lt;/a&gt; where you can find those values but still…. you gotta find that page ;). A few days ago we received an email from a client that said that they were in their final testing in production of the application before they roll it out, but they found something strange, ALL of the hyperlinks that were generated server-side were with the IP address and not the domain ?!?!? We asked them to check with the staging app if they had the same problem (we had already checked, but wanted to make sure). When to got back to us we got the ALL GOOD for staging …. again !?!?! We were the hosting the staging but not the production, that was the only difference and they we’re doing business with another company for the hosting, as much info as we tried to get we kept hitting a wall of dunno’s from them. So we assumed that maybe it had something to do with how the IIS and host headers configuration (shot in the dark!). So after googling I fell on that &lt;a href="http://msdn.microsoft.com/en-us/library/hh975440.aspx" target="_blank"&gt;page&lt;/a&gt; where you can find a bunch of “hidden default values “ for ASP.NET that can be overriden and one of the is &lt;/p&gt;&lt;pre class="brush: xml;"&gt;&amp;lt;add key="aspnet:UseHostHeaderForRequestUrl" value="false" /&amp;gt;
+&lt;/pre&gt;
+&lt;p&gt;and when looking at the definition we get this little piece of info:&lt;/p&gt;&lt;pre class="brush: plain;"&gt;Specifies how the Url property is dynamically built. By default, the Url property is dynamically built from the host, port, and path provided by the web server.
+&lt;/pre&gt;
+&lt;p&gt;Maybe this could be it (again shot in the dark, since we are working blind in this case). So we send this bit of info to our customer, telling him to add this to the application web.config in the appsettings and to make sure that the value is TRUE.&lt;/p&gt;
+&lt;p&gt;Since then we haven’t heard from him (3 days and going), so we’re guessing that was the right call.&lt;/p&gt;
+&lt;p&gt;Right or wrong call this &lt;a href="http://msdn.microsoft.com/en-us/library/hh975440.aspx" target="_blank"&gt;page&lt;/a&gt; is now bookmarked for future references, I agree I may never have to go back to change those values, but at least I’ll know they exists, and I’ll have a reference to them. Just to make it obvious that’s the one =&amp;gt; &lt;a title="http://msdn.microsoft.com/en-us/library/hh975440.aspx" href="http://msdn.microsoft.com/en-us/library/hh975440.aspx"&gt;http://msdn.microsoft.com/en-us/library/hh975440.aspx&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Mat&lt;/p&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-12-12 13:14:00</pubDate>
+  <lastModified>2014-12-12 13:14:58</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>aspnet-and-some-appsettings-hidden-values</slug>
+  <tags>
+    <tag>asp.net appsettings</tag>
+  </tags>
+  <comments>
+  </comments>
+  <categories>
+    <category>ASP.NET</category>
+  </categories>
+  <notifications />
+</post>

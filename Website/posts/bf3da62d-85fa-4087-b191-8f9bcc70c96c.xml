@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>Identity 2.0 and WebAPI Owin Authentication</title>
+  <description />
+  <content>&lt;p&gt;When working with the new Identity 2.0 and WebAPI Owin Authentication there is a specific flow you have to follow in order to query an endpoint that need authorization (marked with [Authorize] attribute). Let get going:&lt;/p&gt; &lt;p&gt;First we’ll start with a new ASP.NET project and choose the WebAPI template, make sure that the Authentication is Individual User Account, this will setup the project with all the basic configuration to easily and rapidly use the new Identity provider.&lt;/p&gt; &lt;p&gt;If we look in the Startup.Auth.cs class we can see many of the setup for the Individual User account. What is interesting to us is in this part of the code:&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;// Configure the application for OAuth based flow
+PublicClientId = "self";
+OAuthOptions = new OAuthAuthorizationServerOptions
+{
+    TokenEndpointPath = new PathString("/Token"),
+    Provider = new ApplicationOAuthProvider(PublicClientId),
+    AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
+    AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
+    AllowInsecureHttp = true
+};
+
+// Enable the application to use bearer tokens to authenticate users
+app.UseOAuthBearerTokens(OAuthOptions);
+&lt;font face="Calibri"&gt;&lt;/font&gt;&lt;/pre&gt;Our application will be using Bearer Token as the auth mechanism…this will be important later on, also notice where the token endpoint is “/Token”. 
+&lt;p&gt;Right now if we we’re to try and call a secured endpoint(/api/values) we would get a a 401 Unauthorized, because the route is marked with the Authorize Attribute. In order for us to call this endpoint we must be: 
+&lt;ol&gt;
+&lt;li&gt;A registered user 
+&lt;li&gt;User must be Authorized (by internal or external providers) In a new project there is no existing user (unless you are hooking up to an existing Database that supports the Identity Model), just for transparency I called the endpoint to register a user :&lt;/font&gt;&lt;pre&gt;&lt;/pre&gt;&lt;pre class="brush: plain;"&gt;POST /api/account/register
+{"email":"mat1@matrichard.com",
+"password": "!a12345A",
+"confirmPassword": "!a12345A"}
+&lt;/pre&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;The password validation settings are configured in the IdentityConfig.cs class and these are the default configs:&lt;/p&gt;&lt;pre class="brush: plain;"&gt;manager.PasswordValidator = new PasswordValidator
+{
+    RequiredLength = 6,
+    RequireNonLetterOrDigit = true,
+    RequireDigit = true,
+    RequireLowercase = true,
+    RequireUppercase = true,
+};
+&lt;/pre&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Let’s get back to what is at heart …how to call that /api/values and get a 200 OK instead of 401 Unauthorized. Since I now have a registered user, I only need to Authorize this user, this will be done by making an API call to /Token like so:&lt;/p&gt;&lt;pre class="brush: plain;"&gt;POST /token
+username=mat1%40matrichard.com&amp;amp;password=!a12345A&amp;amp;grant_type=password
+&lt;/pre&gt;
+&lt;p&gt;Two very important things to note with /token :&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;The Content-Type MUST be &lt;code&gt;application/x-www-form-urlencoded&lt;/code&gt; &lt;/strong&gt;
+&lt;li&gt;&lt;strong&gt;A grant_type with the value password MUST be supplied in the body&lt;/strong&gt;&lt;/li&gt;&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;&lt;/strong&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;If everything goes as planned we should receive a 200 OK response with a body that looks very close to that (I removed the access_token for readability purpose) :&lt;/p&gt;&lt;pre class="brush: plain;"&gt;{"access_token":"[A VERY VERY BIG VALUE]",
+"token_type":"bearer",
+"expires_in":1209599,
+"userName":"mat1@matrichard.com",
+".issued":"Wed, 19 Nov 2014 02:40:33 GMT",
+".expires":"Wed, 03 Dec 2014 02:40:33 GMT"}&lt;/pre&gt;&lt;pre class="brush: plain;"&gt;&amp;nbsp;&lt;/pre&gt;
+&lt;p&gt;So now based on this response we can build our call to /api/values by simply adding the token value in the authorize header and pre-pending it with the token_type like so :&lt;/p&gt;&lt;pre class="brush: plain;"&gt;Authorization: Bearer [INSERT TOKEN VALUE]
+&lt;/pre&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;It’s that simple.&lt;/p&gt;
+&lt;p&gt;Mat&lt;br&gt;@matrichard5&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-11-19 02:55:00</pubDate>
+  <lastModified>2015-01-08 14:52:03</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>identity-20-and-webapi-owin-authentication</slug>
+  <tags>
+    <tag>webapi 2</tag>
+    <tag>asp.net</tag>
+    <tag>identity</tag>
+  </tags>
+  <comments>
+  </comments>
+  <categories>
+    <category>ASP.NET</category>
+    <category>ASP.NET MVC</category>
+    <category>WebAPI</category>
+    <category>Identity</category>
+  </categories>
+  <notifications />
+</post>

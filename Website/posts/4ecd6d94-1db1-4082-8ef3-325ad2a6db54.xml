@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>Mat Richard</author>
+  <title>Hello World</title>
+  <description>Well you know I had to !!!!</description>
+  <content>Well you know I had to do it !!!!</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-04-01 21:04:00</pubDate>
+  <lastModified>2014-09-29 12:59:20</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>hello-world</slug>
+  <tags>
+    <tag>hello world</tag>
+  </tags>
+  <comments>
+  </comments>
+  <categories />
+  <notifications />
+</post>

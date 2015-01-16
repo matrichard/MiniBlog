@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>WebAPI Route attribute and constraints</title>
+  <description />
+  <content>&lt;p&gt;In the &lt;a href="http://www.matrichard.com/post/WebAPI-2-Route-attribute" target="_blank"&gt;previous post&lt;/a&gt;, we saw that we could add the Route attribute for an action in a controller. Previously if when wanted to restrict to how a parameter in a route was matched we would add a constraint in the MapHttpRoute from the config.Routes in the WebApiConfig class, like so:&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;config.Routes.MapHttpRoute(
+    name: "DefaultApi",
+    routeTemplate: "api/{controller}/{id}",
+    defaults: new {id = RouteParameter.Optional},
+    constraints: new {id = @"\d+"}
+);
+&lt;/pre&gt;
+&lt;p&gt;this constraint would make sure that the id parameter is a positive integer. But now how can we do that when we are adding the route as a string in an attribute? We just specify the constraint in the template directly:&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;[Route("api/foo/{id:int}", Name = "Foo")]
+public string Get(int id)
+{
+    return "value";
+}
+&lt;/pre&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;So by adding this {id:int} we have now put on a constraint on this route so that parameter matching will be restricted to matching integers only. There is a bunch of possible constraints. Here are a few:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Constraint&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;th&gt;Example&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;bool&lt;/td&gt;
+&lt;td&gt;Matches a Boolean value.&lt;/td&gt;
+&lt;td&gt;{x:bool}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;datetime&lt;/td&gt;
+&lt;td&gt;Matches a &lt;strong&gt;DateTime&lt;/strong&gt; value.&lt;/td&gt;
+&lt;td&gt;{x:datetime}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;decimal&lt;/td&gt;
+&lt;td&gt;Matches a decimal value.&lt;/td&gt;
+&lt;td&gt;{x:decimal}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;double&lt;/td&gt;
+&lt;td&gt;Matches a 64-bit floating-point value.&lt;/td&gt;
+&lt;td&gt;{x:double}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;float&lt;/td&gt;
+&lt;td&gt;Matches a 32-bit floating-point value.&lt;/td&gt;
+&lt;td&gt;{x:float}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;guid&lt;/td&gt;
+&lt;td&gt;Matches a GUID value.&lt;/td&gt;
+&lt;td&gt;{x:guid}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;Matches a 32-bit integer value.&lt;/td&gt;
+&lt;td&gt;{x:int}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;length&lt;/td&gt;
+&lt;td&gt;Matches a string with the specified length or within a specified range of lengths.&lt;/td&gt;
+&lt;td&gt;{x:length(6)}&lt;br&gt;{x:length(1,20)}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;long&lt;/td&gt;
+&lt;td&gt;Matches a 64-bit integer value.&lt;/td&gt;
+&lt;td&gt;{x:long}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;max&lt;/td&gt;
+&lt;td&gt;Matches an integer with a maximum value.&lt;/td&gt;
+&lt;td&gt;{x:max(10)}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;maxlength&lt;/td&gt;
+&lt;td&gt;Matches a string with a maximum length.&lt;/td&gt;
+&lt;td&gt;{x:maxlength(10)}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;min&lt;/td&gt;
+&lt;td&gt;Matches an integer with a minimum value.&lt;/td&gt;
+&lt;td&gt;{x:min(10)}&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;minlength&lt;/td&gt;
+&lt;td&gt;Matches a string with a minimum length.&lt;/td&gt;
+&lt;td&gt;{x:minlength(10)}&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;p&gt;(taken from a &lt;a href="http://www.asp.net/web-api/overview/web-api-routing-and-actions/attribute-routing-in-web-api-2#constraints" target="_blank"&gt;microsoft blog&lt;/a&gt;, they have a bunch also)&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;So there it is, it’s that simple to add a powerful tool in order to better control your route mapping!&lt;/p&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-09-24 02:12:00</pubDate>
+  <lastModified>2015-01-08 14:51:39</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>webapi-route-attribute-and-constraints</slug>
+  <tags />
+  <comments>
+  </comments>
+  <categories />
+  <notifications />
+</post>

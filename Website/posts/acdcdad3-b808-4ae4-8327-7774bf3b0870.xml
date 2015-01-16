@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>So you want to upload in Azure storage from the client - Working with the SAS (Shared Access Signature) – Part I Writing</title>
+  <description />
+  <content>&lt;p&gt;&amp;nbsp;&lt;/p&gt; &lt;p&gt;In this part we will be looking into how we can use the &lt;a href="http://msdn.microsoft.com/en-us/library/azure/dd179355.aspx" target="_blank"&gt;Azure Storage REST API’s&lt;/a&gt; massive documentation in helping us uploading in our PRIVATE container. So after setting CORS on our container, now we need to give access to write or list what is in the container. For that we need a Shared Access Signature (SAS) in this signature when can specify the permission (Read, Write, List,…) as well as the expiration (how much time is the link SAS valid).&lt;/p&gt; &lt;p&gt;Luckily for us the SDK provides us a way of easily generating a SAS, but if you are like me and want to know/understand how that key is generated you will find &lt;a href="http://msdn.microsoft.com/en-US/library/azure/dd179428.aspx" target="_blank"&gt;in-depth explanation here&lt;/a&gt;.&amp;nbsp; With the SDK generating a list is as easy as the code below:&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;// Can write in the blob container testcors for the next 15 minutes 
+var storageCredentials = new StorageCredentials(AccountName, Key); 
+var account = new CloudStorageAccount(storageCredentials, false); 
+var container = account.CreateCloudBlobClient().GetContainerReference("testcors"); // dont't forget CORS 
+var sasWrite = container.GetSharedAccessSignature(new SharedAccessBlobPolicy() 
+    {     
+        Permissions = SharedAccessBlobPermissions.Write,     
+        SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(15) 
+    }); 
+&lt;/pre&gt;
+&lt;p&gt;After this code executes the value for my sasWrite will be something like : &lt;/p&gt;&lt;pre class="brush: plain;"&gt;?sv=2013-08-15&amp;amp;sr=c&amp;amp;sig=vTRvFQmET6LrzyIIHiROpUzSW51Ll7SSlHvjz1Xg93U%3D&amp;amp;se=2014-06-23T19%3A09%3A54Z&amp;amp;sp=w 
+&lt;/pre&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;That was the easy part, now you have to upload and make sure that EVERYTHING is perfect otherwise you will get sometimes helpful messages. In order to make everything work the way you want (eans uploading in your container without a hitch) make sure that:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SAS is valid 
+&lt;li&gt;your URL is pointing to a new or existing(if you are splitting the upload…. PART II) blob in the container 
+&lt;li&gt;the query string has these two other params : &lt;/li&gt;&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;amp;comp=block&amp;amp;blockid= [somethin base64]&lt;/p&gt;&lt;pre&gt;blockid must be a valid Base64 string value that identifies the block. &lt;a href="http://msdn.microsoft.com/en-us/library/azure/dd135726.aspx" target="_blank"&gt;more info&lt;/a&gt;&lt;/pre&gt;&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;Request headers has two keys 
+&lt;blockquote&gt;&lt;pre&gt;&lt;strike&gt;'x-ms-blob-type': 'BlockBlob'&lt;/strike&gt;, well not anymore !!&lt;/pre&gt;&lt;pre&gt;'Content-Length': length of the chunk to upload /*most of the time the browser will handle it*/&lt;/pre&gt;&lt;/blockquote&gt;
+&lt;p&gt;In the end my Request will look something like this :&lt;/p&gt;&lt;pre class="brush: plain;"&gt;PUT &lt;a href="https://democors.blob.core.windows.net/testcors/13a5e942-54a1-43ed-8cd1-dc753c92a311?sv=2013-08-15&amp;amp;sr=c&amp;amp;sig=hfixkzR1GhwEc2xOnm5JpyKfCsHWHk6J6cFe81BoVSc%3D&amp;amp;se=2014-06-23T19%3A38%3A27Z&amp;amp;sp=w&amp;amp;comp=block&amp;amp;blockid=MDAwMDAw"&gt;https://democors.blob.core.windows.net/testcors/13a5e942-54a1-43ed-8cd1-dc753c92a311?sv=2013-08-15&amp;amp;sr=c&amp;amp;sig=hfixkzR1GhwEc2xOnm5JpyKfCsHWHk6J6cFe81BoVSc%3D&amp;amp;se=2014-06-23T19%3A38%3A27Z&amp;amp;sp=w&amp;amp;comp=block&amp;amp;blockid=MDAwMDAw
+&lt;/a&gt;&lt;/pre&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;ul&gt;&lt;/ul&gt;
+&lt;ul&gt;&lt;/ul&gt;
+&lt;ul&gt;&lt;/ul&gt;
+&lt;ul&gt;&lt;/ul&gt;&lt;pre&gt;&amp;nbsp;&lt;/pre&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;If we break it down we get:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://democors.blob.core.windows.net/testcors/13a5e942-54a1-43ed-8cd1-dc753c92a311?sv=2013-08-15&amp;amp;sr=c&amp;amp;sig=hfixkzR1GhwEc2xOnm5JpyKfCsHWHk6J6cFe81BoVSc%3D&amp;amp;se=2014-06-23T19%3A38%3A27Z&amp;amp;sp=w&amp;amp;comp=block&amp;amp;blockid=MDAwMDAw"&gt;https://democors.blob.core.windows.net&lt;/a&gt; is my storage account 
+&lt;li&gt;/testcors/ is my PRIVATE container 
+&lt;li&gt;13a5e942-54a1-43ed-8cd1-dc753c92a311 is the filename in the container (I chose to store it using a GUID) 
+&lt;li&gt;?sv=2013-08-15&amp;amp;sr=c&amp;amp;sig=hfixkzR1GhwEc2xOnm5JpyKfCsHWHk6J6cFe81BoVSc%3D&amp;amp;se=2014-06-23T19%3A38%3A27Z&amp;amp;sp=w is the SAS 
+&lt;li&gt;comp=block&amp;amp;blockid=MDAwMDAw the other part in order to PUT a list with a unique and valid blockid&lt;/li&gt;&lt;/ul&gt;
+&lt;p&gt;Once all the part of the file are uploaded you must finalize the operation by PUTting the list of blocks&amp;nbsp; in the proper order (that means that they could have been uploaded in any order as long as you know the proper order).&lt;/p&gt;
+&lt;p&gt;So my request where I PUT the the XML message I would be putting would be :&lt;/p&gt;
+&lt;p&gt;PUT &lt;a href="https://democors.blob.core.windows.net/testcors/13a5e942-54a1-43ed-8cd1-dc753c92a311?sv=2013-08-15&amp;amp;sr=c&amp;amp;sig=hfixkzR1GhwEc2xOnm5JpyKfCsHWHk6J6cFe81BoVSc%3D&amp;amp;se=2014-06-23T19%3A38%3A27Z&amp;amp;sp=w&amp;amp;comp=blocklist"&gt;https://democors.blob.core.windows.net/testcors/13a5e942-54a1-43ed-8cd1-dc753c92a311?sv=2013-08-15&amp;amp;sr=c&amp;amp;sig=hfixkzR1GhwEc2xOnm5JpyKfCsHWHk6J6cFe81BoVSc%3D&amp;amp;se=2014-06-23T19%3A38%3A27Z&amp;amp;sp=w&amp;amp;comp=blocklist&lt;/a&gt;&lt;/p&gt;&lt;pre class="brush: xml;"&gt;&amp;lt;?xml version="1.0" encoding="utf-8"?&amp;gt;
+    &amp;lt;BlockList&amp;gt;
+        &amp;lt;Latest&amp;gt;MDAwMDAw&amp;lt;/Latest&amp;gt;
+    &amp;lt;/BlockList&amp;gt;
+&lt;/pre&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;If everything is OK with my upload I will then get a 201 Created response.&lt;/p&gt;
+&lt;p&gt;I will be blogging more on that subject since there is a lot possibilities to this subject.&lt;/p&gt;
+&lt;p&gt;Enjoy !!!&lt;/p&gt;
+&lt;p&gt;Mat&lt;/p&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-07-01 19:37:50</pubDate>
+  <lastModified>2015-01-08 14:52:04</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>so-you-want-to-upload-in-azure-storage-from-the-client-working-with-the-sas-(shared-access-signature)-part-i-writing</slug>
+  <tags />
+  <comments>
+  </comments>
+  <categories />
+  <notifications>
+    <email>courtney.raper70@gmail.com</email>
+  </notifications>
+</post>

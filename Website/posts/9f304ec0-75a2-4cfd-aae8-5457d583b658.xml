@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>Visual Studio Tools for Apache Cordova CTP3.0 in Visual Studio 2013 with Update 4</title>
+  <description />
+  <content>&lt;p&gt;Today after watching vsConnect(); I decided that I would get the new Update 4 for Visual studio 2013 that’s been released. After watching a demo I also wanted the new bits for the Apache Cordova visual studio tools. I already had CTP2 installed, so I went ahead and installed Update 4 then tried my luck at finding CTP3…….. which was not an easy task. Then I noticed something nice in the New Project templates for Multi-Device Hybrid Apps, I could create a new project to update the tools. Heck that’s what I’m trying to do so I selected that option and it launched my browser to this URL : &lt;a title="http://go.microsoft.com/fwlink/?LinkId=403005" href="http://go.microsoft.com/fwlink/?LinkId=403005"&gt;http://go.microsoft.com/fwlink/?LinkId=403005&lt;/a&gt; and then it started to download the CTP 3 installer …nice. Or so I thought, it turns out that before installing Update 4 I should have uninstalled CTP 2, now I get a Setup block with the message that states something like “You must use the console to uninstall CTP 2 more info here : &lt;a title="http://support.microsoft.com/kb/3014133" href="http://support.microsoft.com/kb/3014133"&gt;http://support.microsoft.com/kb/3014133&lt;/a&gt;. This page will give you a nice and easy step by step (3 steps) on how to uninstall CTP2 and install CTP3. It even provides the nice command to run in an admin console : &lt;/p&gt;&lt;pre class="brush: plain;"&gt;"%ProgramData%\Package Cache\{dea88246-f74a-4171-ad6c-d9c978bf2973}\vs2013mda_0.1.exe" /uninstall /passive /force /burn.ignoredependencies={53d408db-eb91-43fb-9d8f-167681c19763};vsupdate_KB2829760
+&lt;/pre&gt;
+&lt;p&gt;If you don’t want to end up hitting your head against a wall like I did for a few hours make sure you copy/paste as it is shown…. those “ at the beginning are crucial :D&lt;/p&gt;
+&lt;p&gt;After putting those double quotes where they are supposed to be it’s uninstalling as I write this blog post.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Mat&lt;/p&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-11-13 01:43:00</pubDate>
+  <lastModified>2015-01-08 14:52:03</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>visual-studio-tools-for-apache-cordova-ctp30-in-visual-studio-2013-with-update-4</slug>
+  <tags>
+    <tag>visual studio</tag>
+    <tag>update 4</tag>
+    <tag>cordova</tag>
+    <tag>ctp 3</tag>
+  </tags>
+  <comments>
+  </comments>
+  <categories>
+    <category>visual studio</category>
+    <category>Cordova</category>
+  </categories>
+  <notifications />
+</post>

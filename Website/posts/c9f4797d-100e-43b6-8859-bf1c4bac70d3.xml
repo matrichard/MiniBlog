@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>So you want to upload in Azure storage from a browser do you !! Here is my how to</title>
+  <description />
+  <content>&lt;p align="left"&gt;A while back (like way back) I wanted to upload a file in my Azure blob storage from a browser, but that was impossible because &lt;a href="http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing" target="_blank"&gt;CORS&lt;/a&gt; wasn’t available. A few Azure releases later and lo and behold CORS is available !!!! So after a few trials and error I was able to upload a rather large file(&amp;gt; 500 MB) without too much problem.&amp;nbsp; I will be writing a few post on how I was able to set it up. Here are a few key points I will be writing about :&lt;/p&gt; &lt;ul&gt; &lt;li&gt; &lt;div align="left"&gt;&lt;a href="http://www.matrichard.com/post/So-you-want-to-upload-in-Azure-storage-from-a-browser-do-you-!!-Dont-forget-CORS" target="_blank"&gt;Enabling CORS&lt;/a&gt; (updated on June 4th 2014)&lt;/div&gt; &lt;li&gt; &lt;div align="left"&gt;Working with the SAS (Shared Access Signature)&lt;/div&gt; &lt;li&gt; &lt;div align="left"&gt;Uploading from the client small and big files&lt;/div&gt; &lt;li&gt; &lt;div align="left"&gt;Putting it all together&lt;/div&gt;&lt;/li&gt;&lt;/ul&gt; &lt;p align="left"&gt;&amp;nbsp;&lt;/p&gt; &lt;p align="left"&gt;I will be keeping this list updated for when the posts are online.&lt;/p&gt; &lt;p align="left"&gt;Enjoy&lt;/p&gt;&lt;!--EndFragment--&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-05-06 00:58:40</pubDate>
+  <lastModified>2015-01-08 14:51:40</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>so-you-want-to-upload-in-azure-storage-from-a-browser-do-you--here-is-my-how-to</slug>
+  <tags>
+    <tag>angularjs</tag>
+    <tag>asp.net mvc 5</tag>
+    <tag>javascript</tag>
+    <tag>HTML5</tag>
+    <tag>CORS</tag>
+    <tag>Azure Storage</tag>
+  </tags>
+  <comments>
+    <comment id="281b6f2e-7ea1-4c5e-b7be-2abd3ba1054c" parentid="00000000-0000-0000-0000-000000000000" approved="True" spam="False" deleted="False">
+      <date>2014-05-31 20:30:53</date>
+      <author>Brigida Mclennon</author>
+      <email>Coghlan@gmail.com</email>
+      <country>us</country>
+      <ip>173.234.57.86:50487</ip>
+      <avatar />
+      <content>Ottimo contenuto. Grazie per averlo condiviso, da oggi seguo questo blog perchè mi piace :)</content>
+    </comment>
+  </comments>
+  <categories>
+    <category>ASP.NET MVC</category>
+    <category>Azure Storage</category>
+    <category>Javascript</category>
+    <category>Html 5</category>
+    <category>CORS</category>
+  </categories>
+  <notifications />
+</post>

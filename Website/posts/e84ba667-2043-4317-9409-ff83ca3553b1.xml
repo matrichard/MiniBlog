@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>Mat Richard</author>
+  <title>Layout inheritance in ASP.NET MVC (It’s more like chaining Layouts but you get the point)</title>
+  <description>tl;dr  Let’s have an hypothetical example where you need to have two different layouts in your MVC a</description>
+  <content>&lt;a href="#tldr"&gt;tl;dr&lt;/a&gt;  &lt;p&gt;Let’s have an hypothetical example where you need to have two different layouts in your MVC application based on the fact that you are in a secured context or an anonymous context. Based on those contexts, if you are in a secured context a menu should be in the header as well as some other controls and in an anonymous context a simple logo should be displayed (before you say it, I already know that the partial _LoginPartial.cshtml does that, I’m just using this as an example). So given the default _Layout.cshtml in ASP.NET MVC 5:&lt;/p&gt;&lt;pre class="brush: xml;"&gt;&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html&amp;gt;
+&amp;lt;head&amp;gt;
+    &amp;lt;meta charset="utf-8" /&amp;gt;
+    &amp;lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&amp;gt;
+    &amp;lt;title&amp;gt;@ViewBag.Title - My ASP.NET Application&amp;lt;/title&amp;gt;
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+    &amp;lt;div class="navbar navbar-inverse navbar-fixed-top"&amp;gt;
+        &amp;lt;div class="navbar-inner"&amp;gt;
+            &amp;lt;div class="container"&amp;gt;
+                &amp;lt;button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"&amp;gt;
+                    &amp;lt;span class="icon-bar"&amp;gt;&amp;lt;/span&amp;gt;
+                    &amp;lt;span class="icon-bar"&amp;gt;&amp;lt;/span&amp;gt;
+                    &amp;lt;span class="icon-bar"&amp;gt;&amp;lt;/span&amp;gt;
+                &amp;lt;/button&amp;gt;
+                @Html.ActionLink("Application name", "Index", "Home", null, new { @class = "brand" })
+                &amp;lt;div class="nav-collapse collapse"&amp;gt;
+                    &amp;lt;ul class="nav"&amp;gt;
+                        &amp;lt;li&amp;gt;@Html.ActionLink("Home", "Index", "Home")&amp;lt;/li&amp;gt;
+                        &amp;lt;li&amp;gt;@Html.ActionLink("About", "About", "Home")&amp;lt;/li&amp;gt;
+                        &amp;lt;li&amp;gt;@Html.ActionLink("Contact", "Contact", "Home")&amp;lt;/li&amp;gt;
+                    &amp;lt;/ul&amp;gt;
+                &amp;lt;/div&amp;gt;
+            &amp;lt;/div&amp;gt;
+        &amp;lt;/div&amp;gt;
+    &amp;lt;/div&amp;gt;
+
+    &amp;lt;div class="container"&amp;gt;
+        @RenderBody()
+        &amp;lt;hr /&amp;gt;
+        &amp;lt;footer&amp;gt;
+            &amp;lt;p&amp;gt;&amp;amp;copy; @DateTime.Now.Year - My ASP.NET Application&amp;lt;/p&amp;gt;
+        &amp;lt;/footer&amp;gt;
+    &amp;lt;/div&amp;gt;
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")    
+    @RenderSection("scripts", required: false)
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/pre&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;We can then create any views based on this layout by just adding new ones (and leaving the layout textbox empty), if we decided to use another layout for a given view all there is to do is add this little code snippet at the top of the View : &lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;@{
+    Layout = "~/Views/Shared/_SecuredLayout.cshtml";
+}&lt;/pre&gt;
+&lt;p&gt;and then the view would be using this _SecuredLayout. Let’s do some modification in the _Layout, since we want to have different controls based on the context, but still want the same layout in the end. So in the top part, I will put everything that has to do with the navigation bar (the div with the class="navbar navbar-inverse navbar-fixed-top") in it’s own partial view and replace it with this:&lt;/p&gt;&lt;pre class="brush: xml;"&gt;&amp;lt;header&amp;gt;
+    @RenderSection("header")
+&amp;lt;/header&amp;gt;&lt;/pre&gt;
+&lt;p&gt;So now every view that is using the_Layout.cshtml has to have a section named header where they will define what is to be displayed in the header. So far not good, let’s face it the reason why we use a base layout is to not have to repeat this header section in every view. So I’ll go ahead and create 2 new layouts: _AnonymousLayout and _SecuredLayout. Once this is done all I have to do is assign the base layout and then define the header section, it would look something like this:&lt;/p&gt;&lt;pre class="brush: xml;"&gt;&amp;lt;!-- Anonymous Layout --&amp;gt;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section header{
+    &amp;lt;p&amp;gt;Some Anonymous header to be displayed here&amp;lt;/p&amp;gt;
+}
+
+&amp;lt;!-- Secured Layout --&amp;gt;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section header{
+    @Html.Partial("_SecuredHeaderPartial") &amp;lt;!-- the header we removed earlier--&amp;gt;
+}
+&lt;/pre&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Once that is done I can have any view use either the secured layout or the anonymous layout without them having to define a header section. Go ahead try it, it won’t work !!! You get the yellow screen of death (YSOD) stating&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;h4&gt;&lt;i&gt;The "RenderBody" method has not been called for layout page "~/Views/Shared/_AnonymousLayout.cshtml".&lt;/i&gt;&lt;/h4&gt;&lt;/blockquote&gt;
+&lt;p&gt;that’s an easy one I just go back in both my new layouts and add the @RenderBody() and voila it works. So now I can go in my view and add some JS by defining the scripts section&lt;/p&gt;&lt;pre class="brush: xml;"&gt;&amp;lt;!-- index.cshtml --&amp;gt;
+@section scripts{
+    &amp;lt;script&amp;gt;
+        console.log("in index");
+    &amp;lt;/script&amp;gt;
+}&lt;/pre&gt;
+&lt;p&gt;But something odd was happening in Visual Studio the intellisense wasn’t showing me any possible options for section….meh these things happen right ? So let’s refresh our page and see the beauty of JS…. YSOD again&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;h4&gt;&lt;i&gt;The following sections have been defined but have not been rendered for the layout page "~/Views/Shared/_AnonymousLayout.cshtml": "scripts".&lt;/i&gt;&lt;/h4&gt;&lt;/blockquote&gt;
+&lt;p&gt;man I can’t catch a break !! Alright so go back in both my layouts and I add the @RenderSection("scripts", required: false) under @RenderBody(), refresh the page and we’re back on track once again. Or so I thought, but a quick glance in the source and something ugly shows up:&lt;/p&gt;
+&lt;p&gt;&lt;a href="/posts/files/image.png"&gt;&lt;img title="image" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="image" src="/posts/files/image_thumb.png" width="1257" height="230"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;What is my script tag doing in the middle of a div…….. remember the @RenderSection("scripts", required: false) that we added under @RenderBody(), well this is exactly why. In order to have my script tag at the bottom I should have done this instead in both my layouts&lt;/p&gt;&lt;pre class="brush: xml;"&gt;&amp;lt;!-- Anonymous Layout or SecuredLayouts –&amp;gt;&lt;/pre&gt;&lt;pre class="brush: xml;"&gt;@section scripts
+{
+    @RenderSection("scripts", required: false)
+}&lt;/pre&gt;
+&lt;p&gt;So basically I define my scripts section by telling it to render a section that is called scripts (again), back in my view Intellisense is even offering me the scripts section now and when I look in the source I can see that my script tag is where it should be:&lt;/p&gt;
+&lt;p&gt;&lt;a href="/posts/files/image_1.png"&gt;&lt;img title="image" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="image" src="/posts/files/image_thumb_1.png" width="1201" height="174"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;a id="tldr" href="#"&gt;So long story short (tl;dr):&lt;/a&gt; 
+&lt;ol&gt;
+&lt;li&gt;The new layout &lt;strong&gt;must &lt;/strong&gt;specify what Layout to use i.e: @{Layout = "~/Views/Shared/_Layout.cshtml";} 
+&lt;/li&gt;&lt;li&gt;The new layout must have a call to @RenderBody() 
+&lt;/li&gt;&lt;li&gt;In order to have the scripts section (or any other section rendered in _Layout) where it should be in the source view (at the bottom), you must define the section and “tell it” the render a section i.e: @section scripts{@RenderSection("scripts", required: false)}&lt;/li&gt;&lt;/ol&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Happy coding&lt;/p&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-04-04 11:49:00</pubDate>
+  <lastModified>2015-01-08 14:52:04</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>layout-inheritance-in-aspnet-mvc-(its-more-like-chaining-layouts-but-you-get-the-point)</slug>
+  <tags>
+    <tag>mvc</tag>
+    <tag>asp.net mvc 5</tag>
+    <tag>web</tag>
+    <tag>.NET</tag>
+  </tags>
+  <comments>
+  </comments>
+  <categories />
+  <notifications />
+</post>

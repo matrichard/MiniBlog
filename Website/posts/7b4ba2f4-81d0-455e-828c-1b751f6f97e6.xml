@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<post>
+  <author>mat richard</author>
+  <title>WebAPI 2 Route attribute</title>
+  <description />
+  <content>&lt;p&gt;With the introduction of ASP.NET WebAPI 2 came two new attributes, Route and RoutePrefix. By default route resolving is done using the controller name and then appending controller, from there the framework will try and find a matching controller class and load it up and execute the given action or HTTP VERB. So given this ValuesController class (ValuesController is part of the default WebAPI template when starting a new project, as well as a whole lot of scripts and css…… but that’s another debate).&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;public class ValuesController : ApiController
+{
+    // GET api/values
+    public IEnumerable&amp;lt;string&amp;gt; Get()
+    {
+        return new string[] { "value1", "value2" };
+    }
+
+    // GET api/values/5
+    public string Get(int id)
+    {
+        return "value " + 5;
+    }
+}
+&lt;/pre&gt;
+&lt;p&gt;when requesting this route:&lt;/p&gt;&lt;pre class="brush: plain;"&gt;GET http://localhost:64770/api/values/5&lt;/pre&gt;
+&lt;p&gt;We know that we will get back a response(XML, JSON, or any other format you want to support) with the HTTP Status code of 200 (OK) with the string values 5 in the response body.&lt;/p&gt;
+&lt;p&gt;Now if I were to add the Route attribute on the GET action:&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;[Route("api/foo/{id}", Name = "GetFoo")]
+public string Get(int id)
+{
+    return "value " + id;
+}
+&lt;/pre&gt;
+&lt;p&gt;and requesting the previous URL we will now have a 404 (Not Found) response and a message stating that “No HTTP resource was found that matches the request URI”, but by calling&lt;/p&gt;&lt;pre class="brush: plain;"&gt;GET http://localhost:64770/api/foo/5&lt;/pre&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;We now get a 200 (OK) response with the string values 5 in the response body, just like before. The {id} is used for parameter binding and eventually can be used for route constraints. When adding the route attribute, you can choose to give it a name and an order. If you need (most probably) to add route constraints to your route it can be done by following the route constraints semantic (another blog post).&lt;/p&gt;
+&lt;p&gt;Don’t forget that for you routes to be properly mapped, you must make sure that in the WebApiConfig.Register method that this line of code:&lt;/p&gt;&lt;pre class="brush: csharp;"&gt;config.MapHttpAttributeRoutes();&lt;/pre&gt;
+&lt;p&gt;is present otherwise you will get HTTP 404.&lt;/p&gt;
+&lt;p&gt;So with this attribute we can now easily define a bunch of routes inside a controller, even go for versioning, wihtout having to override classes.&lt;/p&gt;
+&lt;p&gt;Next up route constraints!&lt;/p&gt;</content>
+  <ispublished>True</ispublished>
+  <isdeleted>False</isdeleted>
+  <iscommentsenabled>True</iscommentsenabled>
+  <pubDate>2014-09-12 12:40:00</pubDate>
+  <lastModified>2014-09-12 12:39:57</lastModified>
+  <raters>0</raters>
+  <rating>0</rating>
+  <slug>webapi-2-route-attribute</slug>
+  <tags>
+    <tag>webapi 2</tag>
+  </tags>
+  <comments>
+    <comment id="63f31880-6fff-461a-850c-d5642da348cf" parentid="00000000-0000-0000-0000-000000000000" approved="True" spam="False" deleted="False">
+      <date>2014-09-24 02:12:05</date>
+      <author>Just Code It</author>
+      <email>trackback</email>
+      <country />
+      <ip>23.96.34.196:14992</ip>
+      <website>http://www.matrichard.com/post/WebAPI-Route-attribute-and-constraints</website>
+      <moderatedby>Rule:white list</moderatedby>
+      <content>WebAPI Route attribute and constraints
+
+WebAPI Route attribute and constraints</content>
+    </comment>
+  </comments>
+  <categories>
+    <category>WebAPI</category>
+  </categories>
+  <notifications />
+</post>
